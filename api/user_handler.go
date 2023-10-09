@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/JovidYnwa/hostel-reservation/types"
 	"github.com/gofiber/fiber/v2"
@@ -22,8 +24,8 @@ func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
 	if err := c.BodyParser(&params); err != nil {
 		return err
 	}
-	if err := params.Validate(); err != nil {
-		return err
+	if errors := params.Validate(); len(errors) > 0 {
+		return c.JSON(errors)
 	}
 	user, err := types.NewUserFromParams(params)
 	if err != nil {
@@ -51,4 +53,10 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 		return err
 	}
 	return c.JSON(users)
+}
+
+func (h *UserHandler) HandlerTest(c *fiber.Ctx) error{
+	fmt.Println(h)
+	fmt.Println(c)
+	return c.JSON("Yo")
 }

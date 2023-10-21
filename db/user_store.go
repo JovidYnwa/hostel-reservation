@@ -66,10 +66,10 @@ func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*typ
 	return user, nil
 }
 
-func NewMongoUserStore(client *mongo.Client) *MongoUserStore{
+func NewMongoUserStore(client *mongo.Client, dbname string) *MongoUserStore{
 	return &MongoUserStore{
 		client: client,
-		coll:   client.Database(DBNAME).Collection(UserColl),
+		coll:   client.Database(dbname).Collection(UserColl),
 	}
 }
 

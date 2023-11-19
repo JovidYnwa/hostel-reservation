@@ -36,6 +36,7 @@ func main(){
 	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, db.DBNAME)) 
 	app := fiber.New(config)
 	apiv1 := app.Group("/api/v1")
+	
 	apiv1.Post("/user", userHandler.HandlePostUser)
 	apiv1.Put("/user/:id", userHandler.HandlePutUser)
 	apiv1.Delete("/user/:id", userHandler.HandleDeleteUser)
@@ -43,7 +44,6 @@ func main(){
 	apiv1.Get("/users", userHandler.HandleGetUsers)
 
 	apiv1.Get("/test", userHandler.HandlerTest)
-
 	app.Listen(*listenAddr)
 }
 //26

@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type Hostel interface {
+type HostelStore interface {
 	InsertHostel(context.Context, *types.Hostel) (*types.Hostel, error)
 	Update(context.Context, bson.M, bson.M) error
 }
@@ -19,10 +19,10 @@ type MongoHostelStore struct {
 	coll   *mongo.Collection
 }
 
-func NewMongoHostelStore(client *mongo.Client, dbname string) *MongoHostelStore {
+func NewMongoHostelStore(client *mongo.Client) *MongoHostelStore {
 	return &MongoHostelStore{
 		client: client,
-		coll:   client.Database(dbname).Collection("hostel"),
+		coll:   client.Database(DBNAME).Collection("hostels"),
 	}
 }
 

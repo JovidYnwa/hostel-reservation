@@ -33,17 +33,29 @@ func main(){
 	}
 
 	//Handler initialization
-	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, db.DBNAME)) 
-	app := fiber.New(config)
-	apiv1 := app.Group("/api/v1")
+	var(
+	userHandler    = api.NewUserHandler(db.NewMongoUserStore(client, db.DBNAME)) 
+	hostelStore    = db.NewMongoHostelStore(client)
+	roomStore      = db.NewMongoRoomStore(client, hostelStore)
+	hostelHandeler = api.NewHostelHandler(hostelStore, roomStore)
+	app   = fiber.New(config)
+	apiv1 = app.Group("/api/v1")
+	)
 	
+	
+	//User handlers
 	apiv1.Post("/user", userHandler.HandlePostUser)
 	apiv1.Put("/user/:id", userHandler.HandlePutUser)
 	apiv1.Delete("/user/:id", userHandler.HandleDeleteUser)
 	apiv1.Get("/user/:id", userHandler.HandleGetUser)
 	apiv1.Get("/users", userHandler.HandleGetUsers)
 
+	//hostel handlers
+	apiv1.Get("hostel/", hostelHandeler.HandleGetHostels)
+	app.Listen(*listenAddr)
+
+	//For testing
 	apiv1.Get("/test", userHandler.HandlerTest)
 	app.Listen(*listenAddr)
 }
-//26
+//26 30:00

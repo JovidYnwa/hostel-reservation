@@ -54,8 +54,6 @@ func seedHotel(name, location string) {
 func main() {
 	seedHotel("Serena", "Tajikistan")
 	seedHotel("Moscwa", "Russia")
-
-
 }
 
 func init(){

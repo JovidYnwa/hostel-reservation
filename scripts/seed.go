@@ -18,11 +18,12 @@ var (
 	ctx = context.Background()
 )
 
-func seedHotel(name, location string) {
+func seedHotel(name string, location string, rating int) {
 	hostel := types.Hostel{
 		Name:     name,
 		Location: location,
 		Rooms: []primitive.ObjectID{},
+		Rating: rating,
 	}
 	rooms := []types.Room{
 		{
@@ -52,8 +53,8 @@ func seedHotel(name, location string) {
 }
 
 func main() {
-	seedHotel("Serena", "Tajikistan")
-	seedHotel("Moscwa", "Russia")
+	seedHotel("Serena", "Tajikistan", 5)
+	seedHotel("Moscwa", "Russia", 1)
 }
 
 func init(){

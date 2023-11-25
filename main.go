@@ -51,11 +51,11 @@ func main(){
 	apiv1.Get("/users", userHandler.HandleGetUsers)
 
 	//hostel handlers
-	apiv1.Get("hostel/", hostelHandeler.HandleGetHostels)
+	apiv1.Get("/hostel", hostelHandeler.HandleGetHostels)
 	app.Listen(*listenAddr)
 
 	//For testing
 	apiv1.Get("/test", userHandler.HandlerTest)
 	app.Listen(*listenAddr)
 }
-//26 30:00
+//27

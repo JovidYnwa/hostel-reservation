@@ -40,11 +40,11 @@ func main(){
 	roomStore      = db.NewMongoRoomStore(client, hostelStore)
 	hostelHandeler = api.NewHostelHandler(hostelStore, roomStore)
 	app   = fiber.New(config)
-	apiv1 = app.Group("/api/v1", middleware.JWTAuthentication)
+	auth  = app.Group("/api")
+	apiv1 = app.Group("/api/v1", middleware.JWTAuthentication)//cheking the authentication
 	)
 	
-	//auth
-	apiv1.Post("/auth", userHandler.HandleAuthenticate)
+	auth.Post("/auth", userHandler.HandleAuthenticate)
 	
 	//User handlers
 	apiv1.Post("/user", userHandler.HandlePostUser)

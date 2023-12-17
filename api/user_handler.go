@@ -2,7 +2,6 @@ package api
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/JovidYnwa/hostel-reservation/types"

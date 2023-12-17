@@ -23,7 +23,7 @@ type AuthParams struct {
 
 }
 
-func (h *UserHandler) HandleAuthenticate (c *fiber.Ctx) error {
+func (h *AuthHandler) HandleAuthenticate (c *fiber.Ctx) error {
 	var AuthParams AuthParams
 	if err := c.BodyParser(&AuthParams); err != nil{ 
 		return err

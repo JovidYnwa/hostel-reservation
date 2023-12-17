@@ -13,6 +13,7 @@ type HostelStore interface {
 	InsertHostel(context.Context, *types.Hostel) (*types.Hostel, error)
 	Update(context.Context, bson.M, bson.M) error
 	GetHostels(context.Context, bson.M) ([]*types.Hostel, error)
+	GetHostelByID(context.Context, primitive.ObjectID) (*types.Hostel, error)
 }
 
 type MongoHostelStore struct {
@@ -30,6 +31,14 @@ func NewMongoHostelStore(client *mongo.Client) *MongoHostelStore {
 		client: client,
 		coll:   client.Database(DBNAME).Collection("hostels"),
 	}
+}
+
+func (s *MongoHostelStore) GetHostelByID(ctx context.Context, id primitive.ObjectID) (*types.Hostel, error) {
+	var hostel types.Hostel
+	if err := s.coll.FindOne(ctx, bson.M{"_id": id}).Decode(&hostel); err != nil {
+		return nil, err
+	}
+	return &hostel, nil
 }
 
 func (s *MongoHostelStore) GetHostels(ctx context.Context, filter bson.M) ([]*types.Hostel, error) {

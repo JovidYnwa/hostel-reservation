@@ -19,6 +19,8 @@ type Dropper interface {
 
 type UserStore interface {
 	Dropper
+
+	
 	GetUserById(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
@@ -66,10 +68,11 @@ func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*typ
 	return user, nil
 }
 
-func NewMongoUserStore(client *mongo.Client, dbname string) *MongoUserStore{
+func NewMongoUserStore(client *mongo.Client) *MongoUserStore{
+	
 	return &MongoUserStore{
 		client: client,
-		coll:   client.Database(dbname).Collection(UserColl),
+		coll:   client.Database(DBNAME).Collection(UserColl),
 	}
 }
 

@@ -1,22 +1,22 @@
 package api
 
 import (
-	"fmt"
 
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 
 type HostelHandler struct {
-	hostelStore db.HostelStore 
-	roomStore   db.RoomStore
+	store 	*db.Store
+
 }
 
-func NewHostelHandler(hs db.HostelStore, rs db.RoomStore) *HostelHandler{
+func NewHostelHandler(store *db.Store) *HostelHandler {
 	return &HostelHandler{
-		hostelStore: hs,
-		roomStore: rs, 
+		store: store,
 	} 
 }
 
@@ -25,14 +25,35 @@ type HostelQueryParams struct {
 	Rating int
 }
 
-func (h *HostelHandler) HandleGetHostels(c *fiber.Ctx) error {
-	var qparams HostelQueryParams
-	if err := c.QueryParser(&qparams); err !=nil {
+func (h *HostelHandler) HandleGetRooms(c *fiber.Ctx) error {
+	id := c.Params("id")
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err	
+	}
+	filter := bson.M{"hostelId": oid}
+	rooms, err := h.store.Room.GetRooms(c.Context(),filter)
+	if err != nil {
 		return err
 	}
-	fmt.Println(qparams)
+	return c.JSON(rooms)
+}
 
-	hostels, err := h.hostelStore.GetHostels(c.Context(),nil)
+func (h *HostelHandler) HandleGetHostel(c *fiber.Ctx) error {
+	id := c.Params("id")
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err	
+	}
+	hostel, err := h.store.Hostel.GetHostelByID(c.Context(), oid)
+	if err != nil {
+		return err
+	}
+	return c.JSON(hostel)
+}
+
+func (h *HostelHandler) HandleGetHostels(c *fiber.Ctx) error {
+	hostels, err := h.store.Hostel.GetHostels(c.Context(),nil)
 	if err != nil {
 		return err
 	}

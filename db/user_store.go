@@ -110,9 +110,8 @@ func (s *MongoUserStore) GetUserById(ctx context.Context, id string) (*types.Use
 
 
 func (s *MongoUserStore) GetUserByEmail(ctx context.Context, email string) (*types.User, error) {
-
 	var user types.User
-	if err := s.coll.FindOne(ctx, bson.M{"_email": email}).Decode(&user); err != nil {
+	if err := s.coll.FindOne(ctx, bson.M{"email": email}).Decode(&user); err != nil {
 		return nil, err
 	}
 	return &user, nil

@@ -3,11 +3,12 @@ package api
 import (
 	"errors"
 	"fmt"
+	"go/types"
+
 
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthHandler struct {
@@ -38,10 +39,11 @@ func (h *AuthHandler) HandleAuthenticate (c *fiber.Ctx) error {
 		}
 		return err
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.EncryptedPassword), []byte(params.Password))
-	if err != nil {
-		return fmt.Errorf("invalid credentials")		
+	
+	
+	if !types.IsValidPassword(user.EncryptedPassword, params.Password) {
+		return fmt.Errorf("Invalid credantials")
 	}
-	fmt.Println("authenticated -> ",user)
+	
 	return nil
 }

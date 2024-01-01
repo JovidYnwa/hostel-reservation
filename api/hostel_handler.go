@@ -11,7 +11,6 @@ import (
 
 type HostelHandler struct {
 	store 	*db.Store
-
 }
 
 func NewHostelHandler(store *db.Store) *HostelHandler {

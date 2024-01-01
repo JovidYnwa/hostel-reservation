@@ -69,4 +69,3 @@ func main(){
 	apiv1.Get("/test", userHandler.HandlerTest)
 	app.Listen(*listenAddr)
 }
-//28 | 36:00

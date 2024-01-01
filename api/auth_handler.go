@@ -3,11 +3,13 @@ package api
 import (
 	"errors"
 	"fmt"
-	"go/types"
-
+	"os"
+	"time"
 
 	"github.com/JovidYnwa/hostel-reservation/db"
+	"github.com/JovidYnwa/hostel-reservation/types"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -38,12 +40,26 @@ func (h *AuthHandler) HandleAuthenticate (c *fiber.Ctx) error {
 			return fmt.Errorf("invalid credentials")		
 		}
 		return err
-	}
-	
-	
+	}	
 	if !types.IsValidPassword(user.EncryptedPassword, params.Password) {
 		return fmt.Errorf("Invalid credantials")
 	}
-	
 	return nil
+}
+
+func createTokenFromUser(user *types.User) string {
+	now := time.Now()
+	validTill := now.Add(time.Hour * 4)
+	claims := jwt.MapClaims{
+		"id": user.ID,
+		"email": user.Email,
+		"validTill": validTill,
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	secret := os.Getenv("JWT_SECRET")
+	tokenStr, err := token.SignedString(secret)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return tokenStr
 }

@@ -29,6 +29,11 @@ type AuthParams struct {
 
 }
 
+type AuthResponse struct {
+	User  *types.User `json:"user"`
+	Token string      `json:"token"`
+}
+
 func (h *AuthHandler) HandleAuthenticate (c *fiber.Ctx) error {
 	var params AuthParams
 	if err := c.BodyParser(&params); err != nil{ 
@@ -44,22 +49,29 @@ func (h *AuthHandler) HandleAuthenticate (c *fiber.Ctx) error {
 	if !types.IsValidPassword(user.EncryptedPassword, params.Password) {
 		return fmt.Errorf("Invalid credantials")
 	}
-	return nil
+
+	resp := AuthResponse{
+		User: user,
+		Token: createTokenFromUser(user),
+	}
+	return c.JSON(resp)
 }
+
 
 func createTokenFromUser(user *types.User) string {
 	now := time.Now()
-	validTill := now.Add(time.Hour * 4)
+	expires := now.Add(time.Hour * 4).Unix()
 	claims := jwt.MapClaims{
 		"id": user.ID,
 		"email": user.Email,
-		"validTill": validTill,
+		"expires": expires,
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	secret := os.Getenv("JWT_SECRET")
-	tokenStr, err := token.SignedString(secret)
+	fmt.Println("yara yara yara ", secret)
+	tokenStr, err := token.SignedString([]byte(secret))
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("faild to sign token with secret ",err)
 	}
 	return tokenStr
 }

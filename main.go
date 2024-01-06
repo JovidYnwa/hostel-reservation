@@ -55,7 +55,7 @@ func main(){
 	auth.Post("/auth", authHandler.HandleAuthenticate)
 	
 	//User handlers
-	apiv1.Post("/user", userHandler.HandlePostUser)
+	auth.Post("/user", userHandler.HandlePostUser)
 	apiv1.Put("/user/:id", userHandler.HandlePutUser)
 	apiv1.Delete("/user/:id", userHandler.HandleDeleteUser)
 	apiv1.Get("/user/:id", userHandler.HandleGetUser)
@@ -70,4 +70,4 @@ func main(){
 	app.Listen(*listenAddr)
 }
 
-//34
+//

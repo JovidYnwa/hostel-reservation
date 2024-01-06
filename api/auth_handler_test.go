@@ -17,10 +17,10 @@ import (
 
 func insertTestUser(t *testing.T, userStore db.UserStore) *types.User {
 	user, err := types.NewUserFromParams(types.CreateUserParams{
-		Email: "test@user.com",
-		FirstName: "test",
-		LastName: "testov",
-		Password: "securepasswordhaha",
+		Email: "jalsdf9@asdf.com",
+		FirstName: "Jojo",
+		LastName: "Nono",
+		Password: "some_pass",
 	})
 	if err != nil{
 		t.Fatal(err)
@@ -32,7 +32,7 @@ func insertTestUser(t *testing.T, userStore db.UserStore) *types.User {
 	return user
 }
 
-func testAuthenticateSuccess(t *testing.T) {
+func TestAuthenticateSuccess(t *testing.T) {
 	tdb :=setup(t)
 	defer tdb.teardown(t)
 	insertedUser := insertTestUser(t, tdb.UserStore)
@@ -42,8 +42,8 @@ func testAuthenticateSuccess(t *testing.T) {
 	app.Post("/auth", authHandler.HandleAuthenticate)
 
 	params := AuthParams {
-		Email: "test@user.com",
-		Password: "securepasswordhaha",
+		Email: "jalsdf9@asdf.com",
+		Password: "some_pass",
 	}
 
 	b, _ := json.Marshal(params)
@@ -71,7 +71,7 @@ func testAuthenticateSuccess(t *testing.T) {
 	}
 }
 
-func testAuthenticateWithWrongPassword(t *testing.T) {
+func TestAuthenticateWithWrongPassword(t *testing.T) {
 	tdb :=setup(t)
 	defer tdb.teardown(t)
 	insertedUser := insertTestUser(t, tdb.UserStore)

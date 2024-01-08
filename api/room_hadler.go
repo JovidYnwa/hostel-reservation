@@ -1,9 +1,12 @@
 package api
 
 import (
+	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/JovidYnwa/hostel-reservation/db"
+	"github.com/JovidYnwa/hostel-reservation/types"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -11,6 +14,7 @@ import (
 type BookRoomParams struct {
 	FromDate     time.Time `json:"fromDate"`
 	TillDateDate time.Time `json:"tillDate"`
+	NumPersons   int       `json:"NumPersons"`
 }
 
 type RoomHandler struct {
@@ -24,9 +28,30 @@ func NewRoomHandler(store *db.Store) *RoomHandler {
 }
 
 func (h *RoomHandler) HandleBookRoom(c *fiber.Ctx) error {
+	var params BookRoomParams
+	if err := c.BodyParser(&params); err != nil {
+		return err
+	}
 	roomID, err := primitive.ObjectIDFromHex(c.Params("id"))
+	fmt.Println("first point")
 	if err != nil {
 		return err
 	}
+	user, ok := c.Context().Value("user").(*types.User)
+	if !ok {
+		return c.Status(http.StatusInternalServerError).JSON(genericResp{
+			Type: "error",
+			Msg:  "Internal server error",
+		})
+	}
+	fmt.Println("second point")
+	booking := types.Booking{
+		UserID: user.ID,
+		RoomID: roomID,
+		FromDate: params.FromDate,
+		TillDate: params.TillDateDate,
+		NumPersons: params.NumPersons,
+	}
+	fmt.Println(booking)
 	return nil
 }

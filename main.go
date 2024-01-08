@@ -15,18 +15,16 @@ import (
 
 // Customizing error handling
 var config = fiber.Config{
-    ErrorHandler: func(c *fiber.Ctx, err error) error {
-        return c.JSON(map[string]string{"error": err.Error()})
-		    
-    },
+	ErrorHandler: func(c *fiber.Ctx, err error) error {
+		return c.JSON(map[string]string{"error": err.Error()})
+
+	},
 }
 
+func main() {
 
-func main(){
-
-	listenAddr :=flag.String("listenAddr", ":5000", "The listen address of the Api server")
+	listenAddr := flag.String("listenAddr", ":5000", "The listen address of the Api server")
 	flag.Parse()
-
 
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
 	if err != nil {
@@ -34,26 +32,26 @@ func main(){
 	}
 
 	//Handler initialization
-	var(
-		
-	hostelStore    = db.NewMongoHostelStore(client)
-	roomStore      = db.NewMongoRoomStore(client, hostelStore)
-	userStore      = db.NewMongoUserStore(client)
-	store          = &db.Store{
-		Hostel: hostelStore,
-		Room:   roomStore,
-		User:   userStore,
-	}	
-	userHandler    = api.NewUserHandler(userStore)
-	hostelHandeler = api.NewHostelHandler(store)
-	authHandler    = api.NewAuthHandler(userStore)
-	app   = fiber.New(config)
-	auth  = app.Group("/api")
-	apiv1 = app.Group("/api/v1", middleware.JWTAuthentication(userStore))//cheking the authentication
+	var (
+		hostelStore = db.NewMongoHostelStore(client)
+		roomStore   = db.NewMongoRoomStore(client, hostelStore)
+		userStore   = db.NewMongoUserStore(client)
+		store       = &db.Store{
+			Hostel: hostelStore,
+			Room:   roomStore,
+			User:   userStore,
+		}
+		userHandler    = api.NewUserHandler(userStore)
+		hostelHandeler = api.NewHostelHandler(store)
+		authHandler    = api.NewAuthHandler(userStore)
+		roomHandler    = api.NewRoomHandler(store)
+		app            = fiber.New(config)
+		auth           = app.Group("/api")
+		apiv1          = app.Group("/api/v1", middleware.JWTAuthentication(userStore)) //cheking the authentication
 	)
-	
+
 	auth.Post("/auth", authHandler.HandleAuthenticate)
-	
+
 	//User handlers
 	auth.Post("/user", userHandler.HandlePostUser)
 	apiv1.Put("/user/:id", userHandler.HandlePutUser)
@@ -63,14 +61,13 @@ func main(){
 
 	//hostel handlers
 	apiv1.Get("/hostel", hostelHandeler.HandleGetHostels)
-	app.Listen(*listenAddr)
 
 	//room handlers
-	apiv1.Post("room/:id/book")
+	apiv1.Post("room/:id/book", roomHandler.HandleBookRoom)
 
 	//For testing
 	apiv1.Get("/test", userHandler.HandlerTest)
 	app.Listen(*listenAddr)
 }
 
-//31
+//31 :25

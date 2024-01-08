@@ -8,7 +8,6 @@ import (
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func JWTAuthentication(userStore db.UserStore) fiber.Handler {
@@ -30,8 +29,8 @@ func JWTAuthentication(userStore db.UserStore) fiber.Handler {
 		if time.Now().Unix() > expires{
 			return fmt.Errorf("token expired")
 		}
-		userID := claims["id"].(primitive.ObjectID)
-		user, err := userStore.GetUserById(c.Context(), userID.String())
+		userID := claims["id"].(string)
+		user, err := userStore.GetUserById(c.Context(), userID)
 		if err != nil {
 			return fmt.Errorf("unauthorided")
 		}

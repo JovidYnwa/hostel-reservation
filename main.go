@@ -49,7 +49,7 @@ func main(){
 	authHandler    = api.NewAuthHandler(userStore)
 	app   = fiber.New(config)
 	auth  = app.Group("/api")
-	apiv1 = app.Group("/api/v1", middleware.JWTAuthentication)//cheking the authentication
+	apiv1 = app.Group("/api/v1", middleware.JWTAuthentication(userStore))//cheking the authentication
 	)
 	
 	auth.Post("/auth", authHandler.HandleAuthenticate)
@@ -64,6 +64,9 @@ func main(){
 	//hostel handlers
 	apiv1.Get("/hostel", hostelHandeler.HandleGetHostels)
 	app.Listen(*listenAddr)
+
+	//room handlers
+	apiv1.Post("room/:id/book")
 
 	//For testing
 	apiv1.Get("/test", userHandler.HandlerTest)

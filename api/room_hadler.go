@@ -14,7 +14,7 @@ import (
 type BookRoomParams struct {
 	FromDate     time.Time `json:"fromDate"`
 	TillDateDate time.Time `json:"tillDate"`
-	NumPersons   int       `json:"NumPersons"`
+	NumPersons   int       `json:"numsPersons"`
 }
 
 type RoomHandler struct {
@@ -33,7 +33,7 @@ func (h *RoomHandler) HandleBookRoom(c *fiber.Ctx) error {
 		return err
 	}
 	roomID, err := primitive.ObjectIDFromHex(c.Params("id"))
-	fmt.Println("first point")
+	fmt.Println(params)
 	if err != nil {
 		return err
 	}

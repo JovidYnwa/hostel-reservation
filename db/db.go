@@ -12,4 +12,5 @@ type Store struct {
 	User    UserStore
 	Hostel  HostelStore
 	Room    RoomStore
+	Booking BookingStore
 }

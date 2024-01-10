@@ -33,13 +33,15 @@ func main() {
 
 	//Handler initialization
 	var (
-		hostelStore = db.NewMongoHostelStore(client)
-		roomStore   = db.NewMongoRoomStore(client, hostelStore)
-		userStore   = db.NewMongoUserStore(client)
-		store       = &db.Store{
-			Hostel: hostelStore,
-			Room:   roomStore,
-			User:   userStore,
+		hostelStore  = db.NewMongoHostelStore(client)
+		roomStore    = db.NewMongoRoomStore(client, hostelStore)
+		userStore    = db.NewMongoUserStore(client)
+		bookingStore = db.NewMongoBookingStore(client)
+		store        = &db.Store{
+			Hostel:  hostelStore,
+			Room:    roomStore,
+			User:    userStore,
+			Booking: bookingStore,
 		}
 		userHandler    = api.NewUserHandler(userStore)
 		hostelHandeler = api.NewHostelHandler(store)
@@ -69,5 +71,3 @@ func main() {
 	apiv1.Get("/test", userHandler.HandlerTest)
 	app.Listen(*listenAddr)
 }
-
-//31 :25

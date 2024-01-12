@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -58,7 +59,19 @@ func (h *RoomHandler) HandleBookRoom(c *fiber.Ctx) error {
 		})
 	}
 
+	ok, err = h.isRoomAvailableForBooking(c.Context(), roomID, params)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return c.Status(http.StatusBadRequest).JSON(genericResp{
+			Type: "error",
+			Msg: fmt.Sprintf("room %s already booked", c.Params("id")),
+		})
+	}
+
 	where := bson.M{
+		"_id": roomID,
 		"fromDate": bson.M{
 			"$gte": params.FromDate,
 		},
@@ -71,7 +84,7 @@ func (h *RoomHandler) HandleBookRoom(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	if len(bookings) > 0 { //21:30
+	if len(bookings) > 0 { 
 		return c.Status(http.StatusBadRequest).JSON(genericResp{
 			Type: "error",
 			Msg: fmt.Sprintf("room %s already booked", c.Params("id")),
@@ -90,4 +103,24 @@ func (h *RoomHandler) HandleBookRoom(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(inserted)
+}
+
+func (h *RoomHandler) isRoomAvailableForBooking(ctx context.Context, roomID primitive.ObjectID, params BookRoomParams) (bool, error) {
+	where := bson.M{
+		"_id": roomID,
+		"fromDate": bson.M{
+			"$gte": params.FromDate,
+		},
+		"tillDate": bson.M{
+			"$lte": params.TillDate,
+		},
+	}
+
+	bookings, err := h.store.Booking.GetBookings(ctx, where)
+	if err != nil {
+		return false, err
+	}
+	ok := len(bookings) == 0 
+	return ok, nil
+	
 }

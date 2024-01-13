@@ -71,7 +71,7 @@ func (h *RoomHandler) HandleBookRoom(c *fiber.Ctx) error {
 	}
 
 	where := bson.M{
-		"_id": roomID,
+		"roomID": roomID,
 		"fromDate": bson.M{
 			"$gte": params.FromDate,
 		},

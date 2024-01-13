@@ -35,6 +35,7 @@ func (s *MongoBookingStore) GetBookings(ctx context.Context, filter bson.M) ([]*
 	if err != nil {
 		return nil, err
 	}
+
 	var bookings []*types.Booking
 	if err := curr.All(ctx, &bookings); err != nil {
 		return nil, err

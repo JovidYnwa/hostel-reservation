@@ -65,6 +65,7 @@ func main() {
 	apiv1.Get("/hostel", hostelHandeler.HandleGetHostels)
 
 	//room handlers
+	apiv1.Get("room/", roomHandler.HandleGetRooms)
 	apiv1.Post("room/:id/book", roomHandler.HandleBookRoom)
 
 	//For testing

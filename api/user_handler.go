@@ -85,7 +85,3 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error{
 	}
 	return c.JSON(map[string]string{"deleted": userID})
 }
-
-func (h *UserHandler) HandlerTest(c *fiber.Ctx) error{
-	return c.JSON("Yo")
-}

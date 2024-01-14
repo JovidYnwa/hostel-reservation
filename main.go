@@ -47,9 +47,11 @@ func main() {
 		hostelHandeler = api.NewHostelHandler(store)
 		authHandler    = api.NewAuthHandler(userStore)
 		roomHandler    = api.NewRoomHandler(store)
+		experHandler   = api.ExperHandlerGet
 		app            = fiber.New(config)
 		auth           = app.Group("/api")
 		apiv1          = app.Group("/api/v1", middleware.JWTAuthentication(userStore)) //cheking the authentication
+		exper = app.Group("/exper/v1")
 	)
 
 	auth.Post("/auth", authHandler.HandleAuthenticate)
@@ -69,6 +71,7 @@ func main() {
 	apiv1.Post("room/:id/book", roomHandler.HandleBookRoom)
 
 	//For testing
-	apiv1.Get("/test", userHandler.HandlerTest)
+	exper.Get("exper/", experHandler)
+
 	app.Listen(*listenAddr)
 }

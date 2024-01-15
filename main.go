@@ -47,6 +47,7 @@ func main() {
 		hostelHandeler = api.NewHostelHandler(store)
 		authHandler    = api.NewAuthHandler(userStore)
 		roomHandler    = api.NewRoomHandler(store)
+		bookingHandler = api.NewBookingHandler(store)
 		app            = fiber.New(config)
 		auth           = app.Group("/api")
 		apiv1          = app.Group("/api/v1", middleware.JWTAuthentication(userStore)) //cheking the authentication
@@ -67,6 +68,12 @@ func main() {
 	//room handlers
 	apiv1.Get("room/", roomHandler.HandleGetRooms)
 	apiv1.Post("room/:id/book", roomHandler.HandleBookRoom)
+
+	//booking handlers
+	apiv1.Get("booking", bookingHandler.HandleGetBookings)
+	apiv1.Get("booking/:id", bookingHandler.HandleGetBooking)
+
+	//cancel booking TODO
 
 	//For testing
 	apiv1.Get("/test", userHandler.HandlerTest)

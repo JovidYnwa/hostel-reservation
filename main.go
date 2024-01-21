@@ -51,7 +51,7 @@ func main() {
 		app            = fiber.New(config)
 		auth           = app.Group("/api")
 		apiv1          = app.Group("/api/v1", middleware.JWTAuthentication(userStore)) //cheking the authentication
-		admin          = apiv1.Group("/api/v1/admin", middleware.AdminAuth)
+		admin          = apiv1.Group("/admin", middleware.AdminAuth)
 	)
 
 	auth.Post("/auth", authHandler.HandleAuthenticate)
@@ -84,4 +84,4 @@ func main() {
 	app.Listen(*listenAddr)
 }
 
-//33 25:47
+//33 35:06

@@ -73,7 +73,7 @@ func seedHotel(name string, location string, rating int) {
 func main() {
 	seedHotel("Serena", "Tajikistan", 5)
 	seedHotel("Moscwa", "Russia", 1)
-	seedUser(true, "jova", "admin", "jova@jova.com", "adminpass1234")
+	seedUser(true, "jova", "admin", "jova@admin.com", "adminpass1234")
 	seedUser(false, "vova", "notadmin", "jova@jova.com", "supersecurepass")
 
 }

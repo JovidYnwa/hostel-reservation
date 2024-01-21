@@ -19,16 +19,17 @@ var (
 	ctx = context.Background()
 )
 
-func seedUser(isAdmin bool, fname string, lname string, email string) {
+func seedUser(isAdmin bool, fname string, lname string, email string, password string) {
 	user, err := types.NewUserFromParams(types.CreateUserParams{
 		Email: email,
 		FirstName: fname,
 		LastName: lname,
-		Password: "securepasswordhaha",
+		Password: password,
 	})
 	if err != nil{
 		log.Fatal(err)
 	}
+	user.IsAdmin = isAdmin
 	_, err = userStore.InsertUser(context.TODO(), user)
 	if err != nil{
 		log.Fatal(err)
@@ -72,7 +73,9 @@ func seedHotel(name string, location string, rating int) {
 func main() {
 	seedHotel("Serena", "Tajikistan", 5)
 	seedHotel("Moscwa", "Russia", 1)
-	seedUser("jova", "jo", "jova@jova.com")
+	seedUser(true, "jova", "admin", "jova@jova.com", "adminpass1234")
+	seedUser(false, "vova", "notadmin", "jova@jova.com", "supersecurepass")
+
 }
 
 func init(){

@@ -19,7 +19,7 @@ var (
 	ctx = context.Background()
 )
 
-func seedUser(fname string, lname string, email string) {
+func seedUser(isAdmin bool, fname string, lname string, email string) {
 	user, err := types.NewUserFromParams(types.CreateUserParams{
 		Email: email,
 		FirstName: fname,

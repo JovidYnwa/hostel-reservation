@@ -14,16 +14,15 @@ const (
 	minFirstNameLen = 2
 	minLastNameLen  = 2
 	minPasswoerdLen = 7
-
 )
 
 type UpdateUserParams struct {
-	FirstName 	string `json:"firstName"`
-	LastName 	string `json:"lastName"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 }
 
 func (p UpdateUserParams) ToBSON() bson.M {
-	m :=bson.M{}
+	m := bson.M{}
 	if len(p.FirstName) > 0 {
 		m["firstName"] = p.FirstName
 	}
@@ -34,10 +33,10 @@ func (p UpdateUserParams) ToBSON() bson.M {
 }
 
 type CreateUserParams struct {
-	FirstName 	string `json:"firstName"`
-	LastName 	string `json:"lastName"`
-	Email    	string `json:"email"`
-	Password    string `json:"password"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
 }
 
 func (params CreateUserParams) Validate() map[string]string {
@@ -52,7 +51,7 @@ func (params CreateUserParams) Validate() map[string]string {
 		errors["password"] = fmt.Sprintf("password length should be at least %d characters", minPasswoerdLen)
 	}
 	if !isEmailValid(params.Email) {
-		errors["email"] = fmt.Sprintf("email is invalid")
+		errors["email"] = fmt.Sprintf("email %s is invalid", params.Email)
 	}
 	return errors
 }
@@ -66,12 +65,13 @@ func isEmailValid(e string) bool {
 	return emailRegex.MatchString(e)
 }
 
-type User struct{
-	ID       		  primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	FirstName 		  string             `bson:"firstName" json:"firstName"`
-	LastName 		  string 			 `bson:"lastName" json:"email"`
-	Email    		  string 			 `bson:"email" json:"lastName"`
-	EncryptedPassword string 		     `bson:"EncryptedPassword" json:"-"`
+type User struct {
+	ID                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	FirstName         string             `bson:"firstName" json:"firstName"`
+	LastName          string             `bson:"lastName" json:"email"`
+	Email             string             `bson:"email" json:"lastName"`
+	EncryptedPassword string             `bson:"EncryptedPassword" json:"-"`
+	IsAdmin           bool               `bson:"IsAdmin" json:"IsAdmin"`
 }
 
 func NewUserFromParams(params CreateUserParams) (*User, error) {
@@ -80,9 +80,9 @@ func NewUserFromParams(params CreateUserParams) (*User, error) {
 		return nil, err
 	}
 	return &User{
-		FirstName: 			params.FirstName,
-		LastName:  			params.LastName,
-		Email:     			params.Email,
-		EncryptedPassword:  string(encpw),
-	},nil
+		FirstName:         params.FirstName,
+		LastName:          params.LastName,
+		Email:             params.Email,
+		EncryptedPassword: string(encpw),
+	}, nil
 }

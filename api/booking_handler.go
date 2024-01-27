@@ -1,6 +1,8 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,6 +19,28 @@ func NewBookingHandler(store *db.Store) *BookingHandler {
 }
 
 
+func (h *BookingHandler) HandleGetCancelBooking(c *fiber.Ctx) error {
+	id := c.Params("id")
+	booking, err := h.store.Booking.GetBookingByID(c.Context(), id)
+	if err != nil {
+		return err
+	}
+	user, err := GetAuthUser(c)
+	if err != nil {
+		return err
+	}
+	if booking.UserID != user.ID{
+		return c.Status(http.StatusUnauthorized).JSON(genericResp{
+			Type: "error",
+			Msg: "not authorized",
+		})
+	}
+	if err :=h.store.Booking.UpdateBooking(c.Context(), booking.ID.String(), bson.M{"canceled": true}); err != nil {
+		return err
+	}
+	return c.JSON(genericResp{Type: "msg", Msg: "updated"})
+}
+
 //This should be admin authorized! TODO
 func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 	bookings, err := h.store.Booking.GetBookings(c.Context(), bson.M{})
@@ -32,6 +56,16 @@ func (h *BookingHandler) HandleGetBooking(c *fiber.Ctx) error {
 	booking, err := h.store.Booking.GetBookingByID(c.Context(), id)
 	if err != nil {
 		return err
+	}
+	user, err := GetAuthUser(c)
+	if err != nil {
+		return err
+	}
+	if booking.UserID != user.ID {
+		return c.Status(http.StatusUnauthorized).JSON(genericResp{
+			Type: "error",
+			Msg: "not authorized",
+		})
 	}
 	return c.JSON(booking)
 }

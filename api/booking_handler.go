@@ -35,7 +35,7 @@ func (h *BookingHandler) HandleGetCancelBooking(c *fiber.Ctx) error {
 			Msg: "not authorized",
 		})
 	}
-	if err :=h.store.Booking.UpdateBooking(c.Context(), booking.ID.String(), bson.M{"canceled": true}); err != nil {
+	if err :=h.store.Booking.UpdateBooking(c.Context(), c.Params("id"), bson.M{"canceled": true}); err != nil {
 		return err
 	}
 	return c.JSON(genericResp{Type: "msg", Msg: "updated"})

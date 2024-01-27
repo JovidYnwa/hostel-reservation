@@ -72,6 +72,7 @@ func main() {
 
 	//booking handlers
 	apiv1.Get("booking/:id", bookingHandler.HandleGetBooking)
+	apiv1.Get("booking/:id/cancel", bookingHandler.HandleGetCancelBooking)
 	
 	//admin can do only
 	admin.Get("booking", bookingHandler.HandleGetBookings)
@@ -79,7 +80,7 @@ func main() {
 
 	//cancel booking TODO
 
-	//For testing
+//For testing
 	apiv1.Get("/test", userHandler.HandlerTest)
 	app.Listen(*listenAddr)
 }

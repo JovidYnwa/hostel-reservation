@@ -21,7 +21,7 @@ var (
 	ctx = context.Background()
 )
 
-func seedUser(isAdmin bool, fname string, lname string, email string, password string) {
+func seedUser(isAdmin bool, fname string, lname string, email string, password string) *types.User {
 	user, err := types.NewUserFromParams(types.CreateUserParams{
 		Email: email,
 		FirstName: fname,
@@ -32,53 +32,50 @@ func seedUser(isAdmin bool, fname string, lname string, email string, password s
 		log.Fatal(err)
 	}
 	user.IsAdmin = isAdmin
-	_, err = userStore.InsertUser(context.TODO(), user)
+	inserteUser, err := userStore.InsertUser(context.TODO(), user)
 	if err != nil{
 		log.Fatal(err)
 	}
 	fmt.Printf("%s -> %s\n", user.Email, api.CreateTokenFromUser(user))
+	return inserteUser
 }
 
-func seedHotel(name string, location string, rating int) {
+func seedHostel(name string, location string, rating int) *types.Hostel {
 	hostel := types.Hostel{
 		Name:     name,
 		Location: location,
 		Rooms: []primitive.ObjectID{},
 		Rating: rating,
 	}
-	rooms := []types.Room{
-		{
-			Size:      "small",
-			Price: 99.9,
-		},
-		{
-			Size:      "normal",
-			Price: 199.9,
-		},
-		{
-			Size:      "kingsize",
-			Price: 129.9,
-		},
-	}
+
 	insertedHostel, err := hostelSotre.InsertHostel(ctx, &hostel)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, room :=range rooms{
-	room.HostelID = insertedHostel.ID
-	_, err := roomStore.InsertRoom(ctx, &room)
+	return insertedHostel
+}
+
+func seedRoom(size string, ss bool, price float64, hostelID primitive.ObjectID) *types.Room {
+	room := &types.Room{
+		Size: size,
+		Seaside: ss,
+		Price: price,
+		HostelID: hostelID,
+	}
+	insertedRoom, err := roomStore.InsertRoom(context.Background(), room)
 	if err != nil {
 		log.Fatal(err)
 	}
-  }
+	return insertedRoom
 }
 
 func main() {
-	seedHotel("Serena", "Tajikistan", 5)
-	seedHotel("Moscwa", "Russia", 1)
 	seedUser(true, "jova", "admin", "jova@admin.com", "adminpass1234")
 	seedUser(false, "vova", "notadmin", "jova@jova.com", "supersecurepass")
-
+	hostel := seedHostel("Serena", "Tajikistan", 5)
+	seedRoom("small", true, 99.99, hostel.ID)
+	seedRoom("medium", true, 199.99, hostel.ID)
+	seedRoom("medium", false, 199.99, hostel.ID)
 }
 
 func init(){

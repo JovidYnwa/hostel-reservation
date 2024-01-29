@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/JovidYnwa/hostel-reservation/api"
 	"github.com/JovidYnwa/hostel-reservation/db"
@@ -18,6 +19,7 @@ var (
 	roomStore db.RoomStore
 	hostelSotre db.HostelStore
 	userStore db.UserStore
+	bookingStore db.BookingStore
 	ctx = context.Background()
 )
 
@@ -38,6 +40,20 @@ func seedUser(isAdmin bool, fname string, lname string, email string, password s
 	}
 	fmt.Printf("%s -> %s\n", user.Email, api.CreateTokenFromUser(user))
 	return inserteUser
+}
+
+func seedBooking(userID, roomID primitive.ObjectID, from, till time.Time) {
+	booking := &types.Booking{
+		UserID: userID,
+		RoomID: roomID,
+		FromDate: from,
+		TillDate: till,
+	}
+	resp, err := bookingStore.InsertBooking(context.Background(), booking); 
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("booking:", resp.ID)
 }
 
 func seedHostel(name string, location string, rating int) *types.Hostel {
@@ -70,12 +86,13 @@ func seedRoom(size string, ss bool, price float64, hostelID primitive.ObjectID) 
 }
 
 func main() {
-	seedUser(true, "jova", "admin", "jova@admin.com", "adminpass1234")
+	jova := seedUser(true, "jova", "admin", "jova@admin.com", "adminpass1234")
 	seedUser(false, "vova", "notadmin", "jova@jova.com", "supersecurepass")
 	hostel := seedHostel("Serena", "Tajikistan", 5)
 	seedRoom("small", true, 99.99, hostel.ID)
 	seedRoom("medium", true, 199.99, hostel.ID)
-	seedRoom("medium", false, 199.99, hostel.ID)
+	room := seedRoom("medium", false, 199.99, hostel.ID)
+	seedBooking(jova.ID, room.ID, time.Now(), time.Now().AddDate(0,0,2))
 }
 
 func init(){
@@ -90,5 +107,6 @@ func init(){
 	hostelSotre = db.NewMongoHostelStore(client)
 	roomStore = db.NewMongoRoomStore(client, hostelSotre)
 	userStore = db.NewMongoUserStore(client)
+	bookingStore = db.NewMongoBookingStore(client)
 
 }

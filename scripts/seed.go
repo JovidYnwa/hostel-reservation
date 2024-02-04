@@ -8,6 +8,7 @@ import (
 
 	"github.com/JovidYnwa/hostel-reservation/api"
 	"github.com/JovidYnwa/hostel-reservation/db"
+	"github.com/JovidYnwa/hostel-reservation/db/fixtures"
 	"github.com/JovidYnwa/hostel-reservation/types"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -86,6 +87,24 @@ func seedRoom(size string, ss bool, price float64, hostelID primitive.ObjectID) 
 }
 
 func main() {
+	var err error
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err :=client.Database(db.DBNAME).Drop(ctx); err != nil{
+		log.Fatal(err)
+	}
+	hostelSotre := db.NewMongoHostelStore(client)
+	store := db.Store {
+		User: db.NewMongoUserStore(client),
+		Booking: db.NewMongoBookingStore(client),
+		Room: db.NewMongoRoomStore(client, hostelSotre),
+		Hostel: hostelSotre,
+	}
+	user := fixtures.AddUser(&store, "test", "testi", false)
+	fmt.Println(user)
+	return
 	jova := seedUser(true, "jova", "admin", "jova@admin.com", "adminpass1234")
 	seedUser(false, "vova", "notadmin", "jova@jova.com", "supersecurepass")
 	hostel := seedHostel("Serena", "Tajikistan", 5)

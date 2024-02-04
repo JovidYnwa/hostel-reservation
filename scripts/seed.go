@@ -96,22 +96,19 @@ func main() {
 		log.Fatal(err)
 	}
 	hostelSotre := db.NewMongoHostelStore(client)
-	store := db.Store {
+	store := &db.Store {
 		User: db.NewMongoUserStore(client),
 		Booking: db.NewMongoBookingStore(client),
 		Room: db.NewMongoRoomStore(client, hostelSotre),
 		Hostel: hostelSotre,
 	}
-	user := fixtures.AddUser(&store, "test", "testi", false)
-	fmt.Println(user)
-	return
-	jova := seedUser(true, "jova", "admin", "jova@admin.com", "adminpass1234")
-	seedUser(false, "vova", "notadmin", "jova@jova.com", "supersecurepass")
-	hostel := seedHostel("Serena", "Tajikistan", 5)
-	seedRoom("small", true, 99.99, hostel.ID)
-	seedRoom("medium", true, 199.99, hostel.ID)
-	room := seedRoom("medium", false, 199.99, hostel.ID)
-	seedBooking(jova.ID, room.ID, time.Now(), time.Now().AddDate(0,0,2))
+	user := fixtures.AddUser(store, "test", "testi", false)
+	admin := fixtures.AddUser(store, "admin", "testi", true)
+	fmt.Println("admin ->", admin)
+	hostel := fixtures.AddHostel(store, "some hostel", "casablanka", 5, nil)
+	room := fixtures.AddRoom(store, "large", true, 88.44, hostel.ID)
+	booking := fixtures.AddBooking(*store, user.ID, room.ID, time.Now(), time.Now().AddDate(0, 0, 5))
+	fmt.Println(booking)	
 }
 
 func init(){

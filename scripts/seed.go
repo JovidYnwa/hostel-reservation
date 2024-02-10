@@ -44,7 +44,7 @@ func main() {
 	fmt.Println("admin ->", api.CreateTokenFromUser(admin))
 	hostel := fixtures.AddHostel(store, "some hostel", "casablanka", 5, nil)
 	room := fixtures.AddRoom(store, "large", true, 88.44, hostel.ID)
-	booking := fixtures.AddBooking(*store, user.ID, room.ID, time.Now(), time.Now().AddDate(0, 0, 5))
+	booking := fixtures.AddBooking(store, user.ID, room.ID, time.Now(), time.Now().AddDate(0, 0, 5))
 	fmt.Println(booking)
 }
 

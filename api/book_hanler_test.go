@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,6 +13,54 @@ import (
 	"github.com/JovidYnwa/hostel-reservation/types"
 	"github.com/gofiber/fiber/v2"
 )
+
+func TestUsereGetBooking(t *testing.T) {
+	db := setup(t)
+	defer db.teardown(t)
+
+	var (
+		nonAuthUser    = fixtures.AddUser(db.Store, "xxx", "yyy", false)
+		user           = fixtures.AddUser(db.Store, "jova", "edu", false)
+		hostel         = fixtures.AddHostel(db.Store, "river hostel", "a", 4, nil)
+		room           = fixtures.AddRoom(db.Store, "small", true, 3.3, hostel.ID)
+		from           = time.Now()
+		till           = time.Now().AddDate(0, 0, 5)
+		booking        = fixtures.AddBooking(db.Store, user.ID, room.ID, from, till)
+		app            = fiber.New()
+		route          = app.Group("/", middleware.JWTAuthentication(db.User))
+		bookingHandler = NewBookingHandler(db.Store)
+	)
+	route.Get("/:id", bookingHandler.HandleGetBooking)
+	req := httptest.NewRequest("GET", fmt.Sprintf("/%s", booking.ID.Hex()), nil)
+	req.Header.Add("X-Api-Token", CreateTokenFromUser(user))
+	resp, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("non 200 reponse got %d", resp.StatusCode)
+	}
+	var bookingResp *types.Booking
+	if err := json.NewDecoder(resp.Body).Decode(&bookingResp); err != nil {
+		t.Fatal(err)
+	}
+	if bookingResp.ID != booking.ID {
+		t.Fatalf("expected %s got %s", booking.ID, bookingResp.ID)
+	}
+	if bookingResp.UserID != booking.UserID {
+		t.Fatalf("excpected %s got %s", booking.UserID, bookingResp.UserID)
+	}
+
+	req = httptest.NewRequest("GET", fmt.Sprintf("/%s", booking.ID.Hex()), nil)
+	req.Header.Add("X-Api-Token", CreateTokenFromUser(nonAuthUser))
+	resp, err = app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode == http.StatusOK {
+		t.Fatalf("expected non 200 reponse got %d", resp.StatusCode)
+	}
+}
 
 func TestAdminGetBooking(t *testing.T) {
 	db := setup(t)
@@ -62,9 +111,9 @@ func TestAdminGetBooking(t *testing.T) {
 		t.Fatal(err)
 	}
 	if resp.StatusCode == http.StatusOK {
-		t.Fatalf("non 200 reponse got %d", resp.StatusCode)
+		t.Fatalf("expected non 200 reponse got %d", resp.StatusCode)
 	}
 
 }
 
-//14
+//18

@@ -1,4 +1,4 @@
-package middleware
+package api
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"github.com/JovidYnwa/hostel-reservation/types"
 	"github.com/gofiber/fiber/v2"
 )
-
 
 func AdminAuth(c *fiber.Ctx) error {
 	user, ok := c.Context().UserValue("user").(*types.User)

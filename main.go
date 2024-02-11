@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/JovidYnwa/hostel-reservation/api"
-	"github.com/JovidYnwa/hostel-reservation/api/middleware"
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,7 +19,8 @@ var config = fiber.Config{
 		if apiError, ok := err.(api.Error); ok {
 			return c.Status(apiError.Code).JSON(apiError)
 		}
-		return api.NewError(http.StatusInternalServerError, err.Error())
+		apiError := api.NewError(http.StatusInternalServerError, err.Error())
+		return c.Status(apiError.Code).JSON(apiError)
 
 	},
 }
@@ -54,8 +54,8 @@ func main() {
 		bookingHandler = api.NewBookingHandler(store)
 		app            = fiber.New(config)
 		auth           = app.Group("/api")
-		apiv1          = app.Group("/api/v1", middleware.JWTAuthentication(userStore)) //cheking the authentication
-		admin          = apiv1.Group("/admin", middleware.AdminAuth)
+		apiv1          = app.Group("/api/v1", api.JWTAuthentication(userStore)) //cheking the authentication
+		admin          = apiv1.Group("/admin", api.AdminAuth)
 	)
 
 	auth.Post("/auth", authHandler.HandleAuthenticate)
@@ -77,14 +77,13 @@ func main() {
 	//booking handlers
 	apiv1.Get("booking/:id", bookingHandler.HandleGetBooking)
 	apiv1.Get("booking/:id/cancel", bookingHandler.HandleGetCancelBooking)
-	
+
 	//admin can do only
 	admin.Get("booking", bookingHandler.HandleGetBookings)
 
-
 	//cancel booking TODO
 
-//For testing
+	//For testing
 	apiv1.Get("/test", userHandler.HandlerTest)
 	app.Listen(*listenAddr)
 }

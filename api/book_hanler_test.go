@@ -73,7 +73,7 @@ func TestAdminGetBooking(t *testing.T) {
 		from           = time.Now()
 		till           = time.Now().AddDate(0, 0, 5)
 		booking        = fixtures.AddBooking(db.Store, user.ID, room.ID, from, till)
-		app            = fiber.New()
+		app            = fiber.New(fiber.Config{ErrorHandler: ErrorHandler})
 		admin          = app.Group("/", JWTAuthentication(db.User), AdminAuth)
 		bookingHandler = NewBookingHandler(db.Store)
 	)
@@ -109,8 +109,8 @@ func TestAdminGetBooking(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if resp.StatusCode == http.StatusOK {
-		t.Fatalf("expected non 200 reponse got %d", resp.StatusCode)
+	if resp.StatusCode != http.StatusUnauthorized {
+		t.Fatalf("expected status unauthorized but got %d", resp.StatusCode)
 	}
 
 }

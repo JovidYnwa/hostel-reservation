@@ -115,5 +115,3 @@ func TestAdminGetBooking(t *testing.T) {
 	}
 
 }
-
-//18

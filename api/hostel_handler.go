@@ -28,7 +28,7 @@ func (h *HostelHandler) HandleGetRooms(c *fiber.Ctx) error {
 	id := c.Params("id")
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return err	
+		return ErrInvalidID()	
 	}
 	filter := bson.M{"hostelId": oid}
 	rooms, err := h.store.Room.GetRooms(c.Context(),filter)

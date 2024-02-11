@@ -34,6 +34,14 @@ type MongoUserStore struct {
 	coll   *mongo.Collection
 }
 
+func NewMongoUserStore(client *mongo.Client) *MongoUserStore{
+	
+	return &MongoUserStore{
+		client: client,
+		coll:   client.Database(DBNAME).Collection(UserColl),
+	}
+}
+
 func (s *MongoUserStore) UpdateUser(ctx context.Context, filter bson.M, params types.UpdateUserParams) error { 
 	update := bson.M{"$set": params}
 	_, err := s.coll.UpdateOne(ctx, filter, update)
@@ -63,14 +71,6 @@ func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*typ
 	}
 	user.ID = res.InsertedID.(primitive.ObjectID)
 	return user, nil
-}
-
-func NewMongoUserStore(client *mongo.Client) *MongoUserStore{
-	
-	return &MongoUserStore{
-		client: client,
-		coll:   client.Database(DBNAME).Collection(UserColl),
-	}
 }
 
 func (s *MongoUserStore) Drop(ctx context.Context) error {

@@ -60,7 +60,7 @@ func (h *AuthHandler) HandleAuthenticate (c *fiber.Ctx) error {
 		return err
 	}	
 	if !types.IsValidPassword(user.EncryptedPassword, params.Password) {
-		return fmt.Errorf("Invalid credantials")
+		return fmt.Errorf("invalid credantials")
 	}
 
 	resp := AuthResponse{

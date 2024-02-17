@@ -45,8 +45,13 @@ func NewMongoUserStore(client *mongo.Client) *MongoUserStore{
 }
 
 func (s *MongoUserStore) UpdateUser(ctx context.Context, filter Map, params types.UpdateUserParams) error { 
-	update := bson.M{"$set": params}
-	_, err := s.coll.UpdateOne(ctx, filter, update)
+	oid, err := primitive.ObjectIDFromHex(filter["_id"].(string))
+	if err != nil {
+		return err
+	}
+	filter["_id"] = oid
+	update := bson.M{"$set": params.ToBSON()}
+	_, err = s.coll.UpdateOne(ctx, bson.M{"_id": oid}, update)
 	if err != nil {
 		return err
 	}

@@ -13,8 +13,8 @@ import (
 type HostelStore interface {
 	InsertHostel(context.Context, *types.Hostel) (*types.Hostel, error)
 	Update(context.Context, Map, Map) error
-	GetHostels(context.Context, Map, *options.FindOptions) ([]*types.Hostel, error)
-	GetHostelByID(context.Context,string) (*types.Hostel, error)
+	GetHostels(context.Context, Map, *Pagination) ([]*types.Hostel, error)
+	GetHostelByID(context.Context, string) (*types.Hostel, error)
 }
 
 type MongoHostelStore struct {
@@ -46,13 +46,16 @@ func (s *MongoHostelStore) GetHostelByID(ctx context.Context, id string) (*types
 	return &hostel, nil
 }
 
-func (s *MongoHostelStore) GetHostels(ctx context.Context, filter Map, opts *options.FindOptions) ([]*types.Hostel, error) {
-	resp, err := s.coll.Find(ctx, filter, opts)
+func (s *MongoHostelStore) GetHostels(ctx context.Context, filter Map, pag *Pagination) ([]*types.Hostel, error) {
+	opts := options.FindOptions{}
+	opts.SetSkip((pag.Page - 1) * pag.Limit)
+	opts.SetLimit(pag.Limit)
+	resp, err := s.coll.Find(ctx, filter, &opts)
 	if err != nil {
 		return nil, err
 	}
 	var hostels []*types.Hostel
-	if err :=resp.All(ctx, &hostels); err != nil{
+	if err := resp.All(ctx, &hostels); err != nil {
 		return nil, err
 	}
 	return hostels, nil

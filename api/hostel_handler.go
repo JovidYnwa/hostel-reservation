@@ -1,11 +1,11 @@
 package api
 
 import (
-
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 
@@ -48,7 +48,12 @@ func (h *HostelHandler) HandleGetHostel(c *fiber.Ctx) error {
 }
 
 func (h *HostelHandler) HandleGetHostels(c *fiber.Ctx) error {
-	hostels, err := h.store.Hostel.GetHostels(c.Context(),nil)
+	page := 1
+	limit := 10
+	opts := options.FindOptions{}
+	opts.SetSkip(int64((page-1) * limit))
+	opts.SetLimit(int64(limit))
+	hostels, err := h.store.Hostel.GetHostels(c.Context(),nil, &opts)
 	if err != nil {
 		return ErrNotResourceNotFound("hostels")
 	}

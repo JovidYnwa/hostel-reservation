@@ -7,12 +7,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type HostelStore interface {
 	InsertHostel(context.Context, *types.Hostel) (*types.Hostel, error)
 	Update(context.Context, Map, Map) error
-	GetHostels(context.Context, Map) ([]*types.Hostel, error)
+	GetHostels(context.Context, Map, *options.FindOptions) ([]*types.Hostel, error)
 	GetHostelByID(context.Context,string) (*types.Hostel, error)
 }
 
@@ -45,8 +46,8 @@ func (s *MongoHostelStore) GetHostelByID(ctx context.Context, id string) (*types
 	return &hostel, nil
 }
 
-func (s *MongoHostelStore) GetHostels(ctx context.Context, filter Map) ([]*types.Hostel, error) {
-	resp, err := s.coll.Find(ctx, filter)
+func (s *MongoHostelStore) GetHostels(ctx context.Context, filter Map, opts *options.FindOptions) ([]*types.Hostel, error) {
+	resp, err := s.coll.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
 	}

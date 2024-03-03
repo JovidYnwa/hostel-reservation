@@ -5,27 +5,27 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/JovidYnwa/hostel-reservation/api"
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/JovidYnwa/hostel-reservation/db/fixtures"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var (
-	client       *mongo.Client
-	roomStore    db.RoomStore
-	hostelSotre  db.HostelStore
-	userStore    db.UserStore
-	bookingStore db.BookingStore
-	ctx          = context.Background()
-)
-
 func main() {
-	var err error
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
+	if err := godotenv.Load(); err != nil {
+		log.Fatal(err)
+	}
+	var (
+		ctx           = context.Background()
+		err           error
+		mongoEndpoint = os.Getenv("MONGO_DB_URL")
+	)
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoEndpoint))
 	if err != nil {
 		log.Fatal(err)
 	}

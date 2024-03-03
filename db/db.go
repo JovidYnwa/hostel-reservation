@@ -1,10 +1,8 @@
 package db
 
-const (
-	DBNAME     = "hostel-reservation"
-	TestDBName = "hostel-reservation-test"
-	DBURI      = "mongodb://localhost:27017"
-)
+import "os"
+
+var DBNAME string
 
 type Pagination struct {
 	Limit int64
@@ -16,4 +14,8 @@ type Store struct {
 	Hostel  HostelStore
 	Room    RoomStore
 	Booking BookingStore
+}
+
+func init() {
+	DBNAME = os.Getenv("MONGO_DB_NAME")
 }

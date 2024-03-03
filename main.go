@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"flag"
 	"log"
+	"os"
 
 	"github.com/JovidYnwa/hostel-reservation/api"
 	"github.com/JovidYnwa/hostel-reservation/db"
@@ -19,9 +19,7 @@ var config = fiber.Config{
 
 func main() {
 
-
-
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBNAME))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -76,6 +74,7 @@ func main() {
 
 	//For testing
 	apiv1.Get("/test", userHandler.HandlerTest)
-	app.Listen(*listenAddr)
-}
 
+	listenAddr := os.Getenv("HTTP_LISTEN_ADDRESS")
+	app.Listen(listenAddr)
+}

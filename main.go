@@ -19,8 +19,7 @@ var config = fiber.Config{
 
 func main() {
 
-	listenAddr := flag.String("listenAddr", ":5000", "The listen address of the Api server")
-	flag.Parse()
+
 
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
 	if err != nil {

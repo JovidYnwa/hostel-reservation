@@ -70,4 +70,3 @@ func (h *HostelHandler) HandleGetHostels(c *fiber.Ctx) error {
 		Page:   int(params.Page),
 	}
 	return c.JSON(resp)
-}

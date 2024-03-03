@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"os"
 
 	"github.com/JovidYnwa/hostel-reservation/types"
 	"go.mongodb.org/mongo-driver/bson"
@@ -28,9 +29,10 @@ func (*MongoHostelStore) Insert(context.Context, *types.Hostel) (*types.Hostel, 
 }
 
 func NewMongoHostelStore(client *mongo.Client) *MongoHostelStore {
+	dbname := os.Getenv(MongoDBNameEnvName)
 	return &MongoHostelStore{
 		client: client,
-		coll:   client.Database(DBNAME).Collection("hostels"),
+		coll:   client.Database(dbname).Collection("hostels"),
 	}
 }
 

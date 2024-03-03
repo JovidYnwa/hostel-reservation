@@ -1,8 +1,6 @@
 package db
 
-import "os"
-
-var DBNAME string
+const MongoDBNameEnvName = "Mongo_DB_NAME"
 
 type Pagination struct {
 	Limit int64
@@ -14,8 +12,4 @@ type Store struct {
 	Hostel  HostelStore
 	Room    RoomStore
 	Booking BookingStore
-}
-
-func init() {
-	DBNAME = os.Getenv("MONGO_DB_NAME")
 }

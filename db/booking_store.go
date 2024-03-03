@@ -2,13 +2,13 @@ package db
 
 import (
 	"context"
+	"os"
 
 	"github.com/JovidYnwa/hostel-reservation/types"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
-
 
 type BookingStore interface {
 	InsertBooking(context.Context, *types.Booking) (*types.Booking, error)
@@ -25,9 +25,10 @@ type MongoBookingStore struct {
 }
 
 func NewMongoBookingStore(client *mongo.Client) *MongoBookingStore {
+	dbname := os.Getenv(MongoDBNameEnvName)
 	return &MongoBookingStore{
 		client: client,
-		coll:   client.Database(DBNAME).Collection("bookings"),
+		coll:   client.Database(dbname).Collection("bookings"),
 	}
 }
 
@@ -36,7 +37,7 @@ func (s *MongoBookingStore) UpdateBooking(ctx context.Context, id string, update
 	if err != nil {
 		return err
 	}
-	m :=bson.M{"$set": update}
+	m := bson.M{"$set": update}
 	_, err = s.coll.UpdateByID(ctx, oid, m)
 	return err
 }

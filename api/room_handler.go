@@ -14,18 +14,18 @@ import (
 )
 
 type BookRoomParams struct {
-	FromDate     time.Time `json:"fromDate"`
-	TillDate     time.Time `json:"tillDate"`
-	NumPersons   int       `json:"numPersons"`
+	FromDate   time.Time `json:"fromDate"`
+	TillDate   time.Time `json:"tillDate"`
+	NumPersons int       `json:"numPersons"`
 }
 
-func (p BookRoomParams) validate() error {
-	now := time.Now()
-	if now.After(p.FromDate) || now.After(p.TillDate) {
-		return fmt.Errorf("cannot book a room in a past")
-	}
-	return nil
-}
+// func (p BookRoomParams) validate() error {
+// 	now := time.Now()
+// 	if now.After(p.FromDate) || now.After(p.TillDate) {
+// 		return fmt.Errorf("cannot book a room in a past")
+// 	}
+// 	return nil
+// }
 
 type RoomHandler struct {
 	store *db.Store
@@ -75,7 +75,7 @@ func (h *RoomHandler) HandleBookRoom(c *fiber.Ctx) error {
 	if !ok {
 		return c.Status(http.StatusBadRequest).JSON(genericResp{
 			Type: "error",
-			Msg: fmt.Sprintf("room %s already booked", c.Params("id")),
+			Msg:  fmt.Sprintf("room %s already booked", c.Params("id")),
 		})
 	}
 
@@ -93,17 +93,17 @@ func (h *RoomHandler) HandleBookRoom(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	if len(bookings) > 0 { 
+	if len(bookings) > 0 {
 		return c.Status(http.StatusBadRequest).JSON(genericResp{
 			Type: "error",
-			Msg: fmt.Sprintf("room %s already booked", c.Params("id")),
+			Msg:  fmt.Sprintf("room %s already booked", c.Params("id")),
 		})
-	} 
+	}
 	booking := types.Booking{
-		UserID: user.ID,
-		RoomID: roomID,
-		FromDate: params.FromDate,
-		TillDate: params.TillDate,
+		UserID:     user.ID,
+		RoomID:     roomID,
+		FromDate:   params.FromDate,
+		TillDate:   params.TillDate,
 		NumPersons: params.NumPersons,
 	}
 	inserted, err := h.store.Booking.InsertBooking(c.Context(), &booking)
@@ -129,7 +129,7 @@ func (h *RoomHandler) isRoomAvailableForBooking(ctx context.Context, roomID prim
 	if err != nil {
 		return false, err
 	}
-	ok := len(bookings) == 0 
+	ok := len(bookings) == 0
 	return ok, nil
-	
+
 }

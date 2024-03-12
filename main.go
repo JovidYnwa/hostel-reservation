@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/JovidYnwa/hostel-reservation/api"
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -22,9 +24,10 @@ func main() {
 	mongoEndpoint := os.Getenv("MONGO_DB_URL")
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoEndpoint))
 	if err != nil {
+		fmt.Println(err)
 		log.Fatal(err)
 	}
-
+	fmt.Println(client)
 	//Handler initialization
 	var (
 		hostelStore  = db.NewMongoHostelStore(client)
@@ -46,10 +49,13 @@ func main() {
 		auth           = app.Group("/api")
 		apiv1          = app.Group("/api/v1", api.JWTAuthentication(userStore)) //cheking the authentication
 		admin          = apiv1.Group("/admin", api.AdminAuth)
+
+		// test           = app.Group("")
+
 	)
 
 	auth.Post("/auth", authHandler.HandleAuthenticate)
-
+	fmt.Println(userStore)
 	//User handlers
 	auth.Post("/user", userHandler.HandlePostUser)
 	apiv1.Put("/user/:id", userHandler.HandlePutUser)
@@ -77,6 +83,8 @@ func main() {
 	apiv1.Get("/test", userHandler.HandlerTest)
 
 	listenAddr := os.Getenv("HTTP_LISTEN_ADDRESS")
+	// Logging middleware
+	app.Use(logger.New())
 	app.Listen(listenAddr)
 }
 

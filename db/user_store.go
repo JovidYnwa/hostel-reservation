@@ -73,6 +73,7 @@ func (s *MongoUserStore) DeleteUser(ctx context.Context, id string) error {
 func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*types.User, error) {
 	res, err := s.coll.InsertOne(ctx, user)
 	if err != nil {
+		fmt.Println("damn ", err)
 		return nil, err
 	}
 	user.ID = res.InsertedID.(primitive.ObjectID)

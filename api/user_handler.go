@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/JovidYnwa/hostel-reservation/types"
@@ -31,8 +32,10 @@ func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("======> ", h.userStore)
 	insertedUser, err := h.userStore.InsertUser(c.Context(), user)
 	if err != nil {
+		fmt.Println("were fucked", err)
 		return err
 	}
 	return c.JSON(insertedUser)

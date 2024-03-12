@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -13,17 +14,14 @@ import (
 
 func JWTAuthentication(userStore db.UserStore) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		fmt.Println("JWT Authenticating")
 		token, ok := c.GetReqHeaders()["X-Api-Token"]
 		if !ok {
 			return ErrUnauthorized()
 		}
 		claims, err := validateToken(token)
-		fmt.Println(claims)
 		if err != nil {
 			return err
 		}
-		fmt.Println(claims)
 		expiresFloat := claims["expires"].(float64)
 		expires := int64(expiresFloat)
 		//Check token expiration
@@ -52,11 +50,10 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 		return []byte(secret), nil
 	})
 	if err != nil {
-		fmt.Println("failed to pars JWT token: ", err)
+		log.Fatal("failed to pars JWT token: ", err)
 		return nil, ErrUnauthorized()
 	}
 	if !token.Valid {
-		fmt.Println("invalid token")
 		return nil, ErrUnauthorized()
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)

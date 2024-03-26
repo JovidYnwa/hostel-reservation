@@ -83,5 +83,6 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandlerTest(c *fiber.Ctx) error {
-	return c.JSON("Yo")
+	user := c.Context().UserValue("user")
+	return c.JSON(user)
 }

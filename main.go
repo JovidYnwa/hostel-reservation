@@ -10,6 +10,7 @@ import (
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -18,6 +19,7 @@ import (
 // Customizing error handling
 var config = fiber.Config{
 	ErrorHandler: api.ErrorHandler,
+	AppName:      "Hostel-Resevation",
 }
 
 func main() {
@@ -49,9 +51,6 @@ func main() {
 		auth           = app.Group("/api")
 		apiv1          = app.Group("/api/v1", api.JWTAuthentication(userStore)) //cheking the authentication
 		admin          = apiv1.Group("/admin", api.AdminAuth)
-
-		// test           = app.Group("")
-
 	)
 
 	auth.Post("/auth", authHandler.HandleAuthenticate)
@@ -83,8 +82,15 @@ func main() {
 	apiv1.Get("/test", userHandler.HandlerTest)
 
 	listenAddr := os.Getenv("HTTP_LISTEN_ADDRESS")
+
+	app.Use(requestid.New())
+
 	// Logging middleware
-	app.Use(logger.New())
+	app.Use(logger.New(logger.Config{
+		Format:     "${time} - ${ip} - ${ua} - ${method} ${path} - ${status} ${resBody}\n", // Customize logging format
+		TimeFormat: "02/Jan/2006:15:04:05 -0700",                                           // Customize time format
+		Output:     os.Stdout,                                                              // Log output to stdout
+	}))
 	app.Listen(listenAddr)
 }
 
@@ -93,3 +99,5 @@ func init() {
 		log.Fatal(err)
 	}
 }
+
+

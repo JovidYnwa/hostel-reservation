@@ -46,6 +46,7 @@ func main() {
 		hostelHandeler = api.NewHostelHandler(store)
 		authHandler    = api.NewAuthHandler(userStore)
 		roomHandler    = api.NewRoomHandler(store)
+		experHandler   = api.NewExperHandler()
 		bookingHandler = api.NewBookingHandler(store)
 		app            = fiber.New(config)
 		auth           = app.Group("/api")
@@ -80,16 +81,23 @@ func main() {
 
 	//For testing
 	apiv1.Get("/test", userHandler.HandlerTest)
+	auth.Get("/periods", experHandler.HandlePeriod)
+	auth.Get("/pdf", experHandler.GeneratePDF)
 
 	listenAddr := os.Getenv("HTTP_LISTEN_ADDRESS")
 
 	app.Use(requestid.New())
 
+	f, err := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		return
+	}
+	log.SetOutput(f)
 	// Logging middleware
 	app.Use(logger.New(logger.Config{
 		Format:     "${time} - ${ip} - ${ua} - ${method} ${path} - ${status} ${resBody}\n", // Customize logging format
 		TimeFormat: "02/Jan/2006:15:04:05 -0700",                                           // Customize time format
-		Output:     os.Stdout,                                                              // Log output to stdout
+		Output:     f,                                                                      // Log output to stdout
 	}))
 	app.Listen(listenAddr)
 }
@@ -99,5 +107,3 @@ func init() {
 		log.Fatal(err)
 	}
 }
-
-

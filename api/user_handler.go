@@ -17,7 +17,7 @@ type UserHandler struct {
 func NewUserHandler(userStore db.UserStore) *UserHandler {
 	return &UserHandler{
 		userStore: userStore,
-	}
+	}	
 }
 
 func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
@@ -32,10 +32,8 @@ func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("======> ", h.userStore)
 	insertedUser, err := h.userStore.InsertUser(c.Context(), user)
 	if err != nil {
-		fmt.Println("were fucked", err)
 		return err
 	}
 	return c.JSON(insertedUser)
@@ -83,6 +81,7 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandlerTest(c *fiber.Ctx) error {
-	user := c.Context().UserValue("user")
-	return c.JSON(user)
+	return fmt.Errorf("bad stuff going on")
+	// user := c.Context().UserValue("user")
+	// return c.JSON(user)
 }

@@ -1,0 +1,5 @@
+2024/04/21 20:07:42.327444 user_store.go:118: [Info] {ObjectID("6602ebca30933f7b17694bc9") first last jova@edu.com $2a$12$Z71ailD.t8Uo.IiXNXCIHekwk7EIKur3HspTn.Q2aCwyLI2F0Yz6O false}
+2024/04/21 22:35:59.464938 user_store.go:118: [Info] {ObjectID("6602ebca30933f7b17694bc9") first last jova@edu.com $2a$12$Z71ailD.t8Uo.IiXNXCIHekwk7EIKur3HspTn.Q2aCwyLI2F0Yz6O false}
+2024/04/21 22:39:10.732517 booking_handler.go:58: [Info] mongo: no documents in result
+2024/04/21 22:39:27.808617 booking_handler.go:58: [Info] mongo: no documents in result
+2024/04/21 22:39:28.423090 booking_handler.go:58: [Info] mongo: no documents in result

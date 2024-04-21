@@ -1,11 +1,11 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -53,9 +53,9 @@ func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 // This need to be user authorized! TODO
 func (h *BookingHandler) HandleGetBooking(c *fiber.Ctx) error {
 	id := c.Params("id")
-	fmt.Println(id)
 	booking, err := h.store.Booking.GetBookingByID(c.Context(), id)
 	if err != nil {
+		log.Info(err)
 		return ErrNotResourceNotFound("booking")
 	}
 	user, err := GetAuthUser(c)

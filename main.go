@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"time"
+
+	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/JovidYnwa/hostel-reservation/api"
 	"github.com/JovidYnwa/hostel-reservation/db"
@@ -25,10 +26,9 @@ func main() {
 	mongoEndpoint := os.Getenv("MONGO_DB_URL")
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoEndpoint))
 	if err != nil {
-		fmt.Println(err)
-		log.Fatal(err)
+		fmt.Println("--->", err)
+		// log.Fatal(err)
 	}
-	fmt.Println(client)
 	//Handler initialization
 	var (
 		hostelStore  = db.NewMongoHostelStore(client)
@@ -54,7 +54,7 @@ func main() {
 	)
 
 	auth.Post("/auth", authHandler.HandleAuthenticate)
-	fmt.Println(userStore)
+
 	//User handlers
 	auth.Post("/user", userHandler.HandlePostUser)
 	apiv1.Put("/user/:id", userHandler.HandlePutUser)
@@ -82,21 +82,23 @@ func main() {
 	apiv1.Get("/test", userHandler.HandlerTest)
 	auth.Get("/periods", experHandler.HandlePeriod)
 	auth.Get("/pdf", experHandler.GeneratePDF)
-	listenAddr := os.Getenv("HTTP_LISTEN_ADDRESS")
 
-	fileNmae :="logs/" + time.Now().Format("02.01.2006_15.04") + ".log"
+	fileNmae := "logs/" + time.Now().Format("02.01.2006") + ".log"
 	logFile, err := os.OpenFile(fileNmae, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		log.Printf("Error opening log file: %v\n", err)
-
+		log.Fatal("Error opening log file: %v\n", err)
 	}
+	log.SetLevel(log.LevelInfo)
 	log.SetOutput(logFile)
-	
-	app.Listen(listenAddr)
+	listenAddr := os.Getenv("HTTP_LISTEN_ADDRESS")
+	err = app.Listen(listenAddr)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func init() {
 	if err := godotenv.Load(); err != nil {
-		log.Fatal(err)
+		log.Fatal("--->", err)
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/JovidYnwa/hostel-reservation/types"
+	"github.com/gofiber/fiber/v2/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -73,7 +74,6 @@ func (s *MongoUserStore) DeleteUser(ctx context.Context, id string) error {
 func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*types.User, error) {
 	res, err := s.coll.InsertOne(ctx, user)
 	if err != nil {
-		fmt.Println("damn ", err)
 		return nil, err
 	}
 	user.ID = res.InsertedID.(primitive.ObjectID)
@@ -115,5 +115,6 @@ func (s *MongoUserStore) GetUserByEmail(ctx context.Context, email string) (*typ
 	if err := s.coll.FindOne(ctx, bson.M{"email": email}).Decode(&user); err != nil {
 		return nil, err
 	}
+	log.Info(user)
 	return &user, nil
 }

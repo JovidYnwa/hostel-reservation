@@ -40,7 +40,7 @@ func main() {
 		Hostel:  hostelSotre,
 	}
 	user := fixtures.AddUser(store, "test", "testi", false)
-	fmt.Println("test ->", api.CreateTokenFromUser(user))
+
 	admin := fixtures.AddUser(store, "admin", "testi", true)
 	fmt.Println("admin ->", api.CreateTokenFromUser(admin))
 	hostel := fixtures.AddHostel(store, "some hostel", "casablanka", 5, nil)

@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/JovidYnwa/hostel-reservation/api"
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -83,22 +82,16 @@ func main() {
 	apiv1.Get("/test", userHandler.HandlerTest)
 	auth.Get("/periods", experHandler.HandlePeriod)
 	auth.Get("/pdf", experHandler.GeneratePDF)
-
 	listenAddr := os.Getenv("HTTP_LISTEN_ADDRESS")
 
-	app.Use(requestid.New())
-
-	f, err := os.OpenFile("test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	fileNmae :="logs/" + time.Now().Format("02.01.2006_15.04") + ".log"
+	logFile, err := os.OpenFile(fileNmae, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		return
+		log.Printf("Error opening log file: %v\n", err)
+
 	}
-	log.SetOutput(f)
-	// Logging middleware
-	app.Use(logger.New(logger.Config{
-		Format:     "${time} - ${ip} - ${ua} - ${method} ${path} - ${status} ${resBody}\n", // Customize logging format
-		TimeFormat: "02/Jan/2006:15:04:05 -0700",                                           // Customize time format
-		Output:     f,                                                                      // Log output to stdout
-	}))
+	log.SetOutput(logFile)
+	
 	app.Listen(listenAddr)
 }
 

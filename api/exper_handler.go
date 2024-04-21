@@ -68,12 +68,9 @@ func (h *ExperHandler) GeneratePDF(c *fiber.Ctx) error {
 		row := []string{d.Msisdn, d.Date.Format("2006-01-02"), fmt.Sprintf("%d", d.DurationSec), fmt.Sprintf("%d", d.DurationMin), d.Direction, fmt.Sprintf("%.2f", d.Price)}
 		pdf = table(pdf, [][]string{row})
 	}
-
-
 	// if pdf.Err() {
 	// 	log.Fatalf("Failed creating PDF report: %s\n", pdf.Error())
 	// }
-
 	// And finally, we write out our finished record to a file.
 	err := savePDF(pdf)
 
@@ -85,7 +82,6 @@ func (h *ExperHandler) GeneratePDF(c *fiber.Ctx) error {
 	return c.JSON("33.pdf")
 }
 
-// Next, we create a new PDF document.
 func newReport() *gofpdf.Fpdf {
 	// The package provides a function named `New()` to create a PDF document with
 	//
@@ -110,27 +106,17 @@ func newReport() *gofpdf.Fpdf {
 	// starting coordinates used here; instead, the `Cell()` method moves
 	// the current position to the end of the cell so that the next call
 	// to `Cell()` continues after the previous cell.
-	pdf.Cell(40, 10, "Daily Report")
+	pdf.Cell(40, 10, "Detalization")
 
 	// The `Ln()` function moves the current position to a new line, with
 	// an optional line height parameter.
 	pdf.Ln(12)
 
 	pdf.SetFont("Times", "", 20)
-	pdf.Cell(40, 10, time.Now().Format("Mon Jan 2, 2006"))
+	pdf.Cell(40, 10, time.Now().Format("01.02.2006"))
 	pdf.Ln(20)
-
 	return pdf
 }
-
-/* ### How Cell() and Ln() advance the output position
-
-As mentioned in the comments, the `Cell()` method takes no coordinates. Instead, the PDF document maintains the current output position internally, and advances it to the right by the length of the cell being written.
-
-Method `Ln()` moves the output position back to the left border and down by the provided value. (Passing `-1` uses the height of the recently written cell.)
-
-HYPE[pdf](pdf.html)
-*/
 
 // ## The Table Header: Formatted Cells
 
@@ -155,6 +141,8 @@ func header(pdf *gofpdf.Fpdf, hdr []string) *gofpdf.Fpdf {
 
 // ## The Table Body
 
+
+
 // In the same fashion, we can create the table body.
 func table(pdf *gofpdf.Fpdf, tbl [][]string) *gofpdf.Fpdf {
 	// Reset font and fill color.
@@ -177,7 +165,6 @@ func table(pdf *gofpdf.Fpdf, tbl [][]string) *gofpdf.Fpdf {
 	return pdf
 }
 
-// Next, let's not forget to impress our boss by adding a fancy image.
 func image(pdf *gofpdf.Fpdf) *gofpdf.Fpdf {
 	// The `ImageOptions` method takes a file path, x, y, width, and height
 	// parameters, and an `ImageOptions` struct to specify a couple of options.
@@ -185,10 +172,7 @@ func image(pdf *gofpdf.Fpdf) *gofpdf.Fpdf {
 	return pdf
 }
 
-// ## Saving The Document
-//
 // Finally, the convenience method `OutputFileAndClose()` lets us save the
-// finished document.
 func savePDF(pdf *gofpdf.Fpdf) error {
 	return pdf.OutputFileAndClose("report.pdf")
 }

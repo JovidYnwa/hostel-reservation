@@ -2,13 +2,13 @@ package api
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/JovidYnwa/hostel-reservation/db"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -46,11 +46,15 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 			fmt.Println("invalid signing method ", token.Header["alg"])
 			return nil, fmt.Errorf("unauthorize")
 		}
+		fmt.Println("fuck 0")
+
 		secret := os.Getenv("JWT_SECRET")
 		return []byte(secret), nil
 	})
+
 	if err != nil {
-		log.Fatal("failed to pars JWT token: ", err)
+		log.Debug("failed to pars JWT token: ", err)
+
 		return nil, ErrUnauthorized()
 	}
 	if !token.Valid {
@@ -58,7 +62,7 @@ func validateToken(tokenStr string) (jwt.MapClaims, error) {
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil,ErrUnauthorized()
+		return nil, ErrUnauthorized()
 	}
 	return claims, nil
 }

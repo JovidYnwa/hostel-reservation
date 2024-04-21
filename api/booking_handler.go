@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/JovidYnwa/hostel-reservation/db"
@@ -18,7 +19,6 @@ func NewBookingHandler(store *db.Store) *BookingHandler {
 	}
 }
 
-
 func (h *BookingHandler) HandleGetCancelBooking(c *fiber.Ctx) error {
 	id := c.Params("id")
 	booking, err := h.store.Booking.GetBookingByID(c.Context(), id)
@@ -29,19 +29,19 @@ func (h *BookingHandler) HandleGetCancelBooking(c *fiber.Ctx) error {
 	if err != nil {
 		return ErrUnauthorized()
 	}
-	if booking.UserID != user.ID{
+	if booking.UserID != user.ID {
 		return c.Status(http.StatusUnauthorized).JSON(genericResp{
 			Type: "error",
-			Msg: "not authorized",
+			Msg:  "not authorized",
 		})
 	}
-	if err :=h.store.Booking.UpdateBooking(c.Context(), c.Params("id"), bson.M{"canceled": true}); err != nil {
+	if err := h.store.Booking.UpdateBooking(c.Context(), c.Params("id"), bson.M{"canceled": true}); err != nil {
 		return err
 	}
 	return c.JSON(genericResp{Type: "msg", Msg: "updated"})
 }
 
-//This should be admin authorized! TODO
+// This should be admin authorized! TODO
 func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 	bookings, err := h.store.Booking.GetBookings(c.Context(), bson.M{})
 	if err != nil {
@@ -50,9 +50,10 @@ func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 	return c.JSON(bookings)
 }
 
-//This need to be user authorized! TODO
+// This need to be user authorized! TODO
 func (h *BookingHandler) HandleGetBooking(c *fiber.Ctx) error {
 	id := c.Params("id")
+	fmt.Println(id)
 	booking, err := h.store.Booking.GetBookingByID(c.Context(), id)
 	if err != nil {
 		return ErrNotResourceNotFound("booking")
@@ -64,7 +65,7 @@ func (h *BookingHandler) HandleGetBooking(c *fiber.Ctx) error {
 	if booking.UserID != user.ID {
 		return c.Status(http.StatusUnauthorized).JSON(genericResp{
 			Type: "error",
-			Msg: "not authorized",
+			Msg:  "not authorized",
 		})
 	}
 	return c.JSON(booking)
